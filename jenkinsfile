@@ -1,0 +1,35 @@
+pipeline {
+    environment {
+        registry = "ikram1lb/tp"
+        registryCredential = 'f444aee3-67d8-44c6-89ce-b6a1fbb66d24'
+        dockerImage = ''
+    }
+    agent any
+    stages {
+        stage('Cloning Git') {
+            steps {
+                script {
+                    retry(3) {
+                        git branch: 'main', url: 'https://github.com/ikram-lb/TP'
+                    }
+                }
+            }
+        }
+        stage('Building image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Publish Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+}
