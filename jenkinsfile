@@ -30,10 +30,12 @@ pipeline {
                     }
                 }
             }
-        } // <- Added the missing closing brace here
-        stage('Deploy image') {
+        }
+        stage('Deploy image') {  // 'Deploy image' stage requires a 'steps' block
             steps {
-                bat "docker run -d $registry:$BUILD_NUMBER"
+                script {
+                    bat "docker run -d $registry:$BUILD_NUMBER"
+                }
             }
         }
     }
